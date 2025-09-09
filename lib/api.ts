@@ -14,10 +14,7 @@ const api = axios.create({
 });
 
 export async function fetchNotes(
-  page: number,
-  perPage: number,
-  search?: string
-): Promise<PaginatedNotes> {
+page: number, perPage: number, search?: string, filter?: string | undefined): Promise<PaginatedNotes> {
   const params: Record<string, string | number> = { page, perPage };
   if (search) params.search = search;
 

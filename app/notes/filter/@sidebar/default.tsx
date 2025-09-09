@@ -1,20 +1,18 @@
 import Link from "next/link";
 import css from "./Sidebar.module.css";
-import type { TagList } from "@/types/note";
 
-export default async function SidebarNotes() {
-  const tags: TagList = ["Todo", "Work", "Personal", "Meeting", "Shopping"];
+const tags = ["All", "Todo", "Work", "Personal", "Meeting", "Shopping"];
+
+export default function SidebarNotes() {
   return (
     <ul className={css.menuList}>
-      <li className={css.menuItem}>
-        <Link className={css.menuLink} href={`/notes/filter/All`}>
-          All notes
-        </Link>
-      </li>
       {tags.map((tag) => (
         <li key={tag} className={css.menuItem}>
-          <Link className={css.menuLink} href={`/notes/filter/${tag}`}>
-            {tag}
+          <Link
+            href={tag === "All" ? "/notes/filter/All" : `/notes/filter/${tag}`}
+            className={css.menuLink}
+          >
+            {tag === "All" ? "All notes" : tag}
           </Link>
         </li>
       ))}

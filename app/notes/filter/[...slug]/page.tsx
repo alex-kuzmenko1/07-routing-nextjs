@@ -1,41 +1,34 @@
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { fetchNotes } from "@/lib/api";
-import NotesClient from "../[...slug]/Notes.client";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import NotesClient from "./Notes.client";
 
-interface NotesPageProps {
-  searchParams: {
-    page?: string;
-    query?: string;
-  };
-}
+type Props = {
+  params: { slug: string[] };
+  searchParams?: { page?: string; query?: string };
+};
 
-export default async function NotesPage({ searchParams }: NotesPageProps) {
-  const page = Number(searchParams.page) || 1;
-  const query = searchParams.query || "";
+export default async function Notes({ params, searchParams }: Props) {
+  const page = Number(searchParams?.page) || 1;
+  const query = searchParams?.query || "";
 
-  
+  const slug = params.slug;
+  const filter = slug[0] === "All" ? undefined : slug[0];
+
   const queryClient = new QueryClient();
 
-  try {
-    
-    await queryClient.prefetchQuery({
-      queryKey: ["notes", page, query],
-      queryFn: () => fetchNotes(page, 12, query),
-      staleTime: 1000 * 60, 
-    });
+  await queryClient.prefetchQuery({
+    queryKey: ["notes", page, query, filter],
+    queryFn: () => fetchNotes(page, 12, query, filter),
+    staleTime: 1000 * 60, 
+  });
 
-    return (
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <NotesClient />
-      </HydrationBoundary>
-    );
-  } catch (error) {
-    console.error("Failed to prefetch notes:", error);
-
-    return (
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <NotesClient />
-      </HydrationBoundary>
-    );
-  }
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <NotesClient filter={filter} />
+    </HydrationBoundary>
+  );
 }

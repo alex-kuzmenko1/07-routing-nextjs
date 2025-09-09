@@ -2,9 +2,9 @@ export interface Note {
   id: string;
   title: string;
   content: string;
-  tag: string;
-  createdAt: string; 
-  updatedAt: string; 
-
+  tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
+  createdAt: string;
+  updatedAt: string;
 }
-export type TagList = string[];
+
+export type TagList = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
