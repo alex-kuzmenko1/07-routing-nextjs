@@ -11,65 +11,73 @@ import NoteForm from "@/components/NoteForm/NoteForm";
 import type { PaginatedNotes } from "@/types/pagination";
 import type { Note } from "@/types/note";
 
-// ✅ Свой debounce-хук, без лишних библиотек
+type NotesClientProps = {
+  filter?: string;
+  initialPage?: number;
+  initialQuery?: string;
+};
+
+// Debounce-хук
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
-
   useEffect(() => {
     const handler = setTimeout(() => setDebounced(value), delay);
     return () => clearTimeout(handler);
   }, [value, delay]);
-
   return debounced;
 }
 
-export default function NotesClient() {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+export default function NotesClient({
+  filter,
+  initialPage = 1,
+  initialQuery = "",
+}: NotesClientProps) {
+  const [search, setSearch] = useState(initialQuery);
+  const [page, setPage] = useState(initialPage);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const { data, isLoading, error } = useQuery<PaginatedNotes, Error>({
-    queryKey: ["notes", page, debouncedSearch],
-    queryFn: () => fetchNotes(page, 12, debouncedSearch),
+  // ✅ useQuery з 1 аргументом-об’єктом
+  const query = useQuery<PaginatedNotes, Error>({
+    queryKey: ["notes", page, debouncedSearch, filter],
+    queryFn: () => fetchNotes(page, 12, debouncedSearch, filter),
     staleTime: 1000 * 60,
-    placeholderData: { notes: [], totalPages: 1, page: 1 },
+    placeholderData: {
+      notes: [] as Note[],
+      totalPages: 1,
+      page: initialPage,
+    },
   });
 
-  const notes: Note[] = data?.notes ?? [];
-  const totalPages: number = data?.totalPages ?? 1;
+  // Приводимо TS до відомого типу
+  const notes: Note[] = query.data?.notes ?? [];
+  const totalPages: number = query.data?.totalPages ?? 1;
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
-    setPage(1); // сбросить на первую страницу при поиске
+    setPage(1);
   };
 
   const handlePageChange = (newPage: number) => setPage(newPage);
 
   return (
     <div>
-      {/* 🔍 Поиск */}
       <SearchBox value={search} onChange={handleSearchChange} />
 
-      {/* 📄 Состояния */}
-      {isLoading && <p>Loading notes...</p>}
-      {error && <p>Failed to load notes: {error.message}</p>}
+      {query.isLoading && <p>Loading notes...</p>}
+      {query.error && <p>Failed to load notes: {query.error.message}</p>}
 
-      {/* 📝 Список */}
       <NoteList notes={notes} />
 
-      {/* 📑 Пагинация */}
       <Pagination
         pageCount={totalPages}
         currentPage={page}
         onPageChange={handlePageChange}
       />
 
-      {/* ➕ Кнопка создания */}
       <button onClick={() => setIsModalOpen(true)}>Create Note</button>
 
-      {/* 🪟 Модалка */}
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>
           <NoteForm onCancel={() => setIsModalOpen(false)} />

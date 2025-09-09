@@ -14,17 +14,23 @@ const api = axios.create({
 });
 
 export async function fetchNotes(
-page: number, perPage: number, search?: string, filter?: string | undefined): Promise<PaginatedNotes> {
+  page: number,
+  perPage: number,
+  search?: string,
+  filter?: string
+): Promise<PaginatedNotes> {
   const params: Record<string, string | number> = { page, perPage };
+  
   if (search) params.search = search;
+  if (filter) params.filter = filter; 
 
   const { data }: AxiosResponse<PaginatedNotes> = await api.get("/notes", {
     params,
   });
 
-  
   return data;
 }
+
 
 export async function createNote(note: {
   title: string;
