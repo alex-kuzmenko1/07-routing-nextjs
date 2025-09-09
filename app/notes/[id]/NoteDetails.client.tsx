@@ -29,7 +29,7 @@ export default function NoteDetailsClient({ id }: NoteDetailsClientProps) {
           <h2>{note.title}</h2>
         </div>
         <p className={css.content}>{note.content}</p>
-        <p className={css.date}>{note.createdAt}</p>
+        <p className={css.date}>{note.created_at}</p>
       </div>
     </div>
   );

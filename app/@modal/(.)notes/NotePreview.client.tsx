@@ -31,8 +31,8 @@ export default function PreviewModal() {
       <p>{error instanceof Error ? error.message : "Something went wrong."}</p>
     );
 
-  const formattedDate = note.createdAt
-    ? `Created at: ${new Date(note.createdAt).toLocaleDateString()}`
+  const formattedDate = note.created_at
+    ? `Created at: ${new Date(note.created_at).toLocaleDateString()}`
     : "";
 
   return (

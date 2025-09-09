@@ -3,8 +3,9 @@ export interface Note {
   title: string;
   content: string;
   tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
-  createdAt: string;
-  updatedAt: string;
+  created_at?: string;
+  updated_at?: string;
 }
+
 
 export type TagList = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
