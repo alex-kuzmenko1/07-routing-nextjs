@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 
 import Modal from "@/components/Modal/Modal";
-import css from "../(.)notes/[id]/NotePreview.module.css";
+import css from "./NotePreview.module.css";
 
 export default function PreviewModal() {
   const router = useRouter();
