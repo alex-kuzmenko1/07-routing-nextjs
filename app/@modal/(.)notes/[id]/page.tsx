@@ -5,7 +5,7 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 
-import PreviewModal from "../NotePreview.client";
+import PreviewModal from "./NotePreview.client";
 type Props = {
   params: Promise<{ id: string }>;
 };
