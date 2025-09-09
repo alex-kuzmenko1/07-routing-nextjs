@@ -38,10 +38,13 @@ export default function NotesClient({
 
   const debouncedSearch = useDebounce(search, 500);
 
-  // ✅ useQuery з 1 аргументом-об’єктом
-  const query = useQuery<PaginatedNotes, Error>({
+  const { data, isLoading, error } = useQuery<PaginatedNotes, Error>({
     queryKey: ["notes", page, debouncedSearch, filter],
-    queryFn: () => fetchNotes(page, 12, debouncedSearch, filter),
+    queryFn: () =>
+      fetchNotes(page, 12, debouncedSearch, filter).catch((err) => {
+        console.error("Fetch notes error:", err);
+        return { notes: [], totalPages: 1, page: 1 };
+      }),
     staleTime: 1000 * 60,
     placeholderData: {
       notes: [] as Note[],
@@ -50,9 +53,8 @@ export default function NotesClient({
     },
   });
 
-  // Приводимо TS до відомого типу
-  const notes: Note[] = query.data?.notes ?? [];
-  const totalPages: number = query.data?.totalPages ?? 1;
+  const notes: Note[] = data?.notes ?? [];
+  const totalPages: number = data?.totalPages ?? 1;
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -65,8 +67,8 @@ export default function NotesClient({
     <div>
       <SearchBox value={search} onChange={handleSearchChange} />
 
-      {query.isLoading && <p>Loading notes...</p>}
-      {query.error && <p>Failed to load notes: {query.error.message}</p>}
+      {isLoading && <p>Loading notes...</p>}
+      {error && <p>Failed to load notes: {error.message}</p>}
 
       <NoteList notes={notes} />
 

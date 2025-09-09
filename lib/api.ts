@@ -13,24 +13,36 @@ const api = axios.create({
   },
 });
 
+/**
+ * Fetch notes with page, perPage, optional search and filter
+ * Returns a valid PaginatedNotes object even if API fails (401, 500, etc)
+ */
 export async function fetchNotes(
   page: number,
   perPage: number,
   search?: string,
   filter?: string
 ): Promise<PaginatedNotes> {
-  const params: Record<string, string | number> = { page, perPage };
-  
-  if (search) params.search = search;
-  if (filter) params.filter = filter; 
+  try {
+    const params: Record<string, string | number> = { page, perPage };
+    if (search) params.search = search;
+    if (filter) params.filter = filter;
 
-  const { data }: AxiosResponse<PaginatedNotes> = await api.get("/notes", {
-    params,
-  });
+    const { data }: AxiosResponse<PaginatedNotes> = await api.get("/notes", {
+      params,
+    });
 
-  return data;
+    return data;
+  } catch (err) {
+    console.error("Fetch notes failed:", err);
+    // Завжди повертаємо валідний об'єкт
+    return {
+      notes: [],
+      totalPages: 1,
+      page,
+    };
+  }
 }
-
 
 export async function createNote(note: {
   title: string;
