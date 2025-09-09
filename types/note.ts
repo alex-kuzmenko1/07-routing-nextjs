@@ -7,3 +7,4 @@ export interface Note {
   updatedAt: string; 
 
 }
+export type TagList = string[];

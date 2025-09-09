@@ -23,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/notes/filter/[...slug]/Notes.client.tsx", "app/notes/filter/[...slug]/error.tsx", "app/notes/filter/[...slug]/loading.tsx"],
   "exclude": ["node_modules"]
 }
