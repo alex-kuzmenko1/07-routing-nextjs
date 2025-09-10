@@ -7,15 +7,16 @@ import {
 import NotesClient from "./Notes.client";
 
 type Props = {
-  params: { slug: string[] };
+  params: Promise<{ slug: string[] }>;
   searchParams?: { page?: string; query?: string };
 };
 
 export default async function Notes({ params, searchParams }: Props) {
+  const { slug } = await params;
+
   const page = Number(searchParams?.page) || 1;
   const query = searchParams?.query || "";
 
-  const slug = params.slug;
   const filter = slug[0] === "All" ? undefined : slug[0];
 
   const queryClient = new QueryClient();
@@ -23,7 +24,7 @@ export default async function Notes({ params, searchParams }: Props) {
   await queryClient.prefetchQuery({
     queryKey: ["notes", page, query, filter],
     queryFn: () => fetchNotes(page, 12, query, filter),
-    staleTime: 1000 * 60, 
+    staleTime: 1000 * 60,
   });
 
   return (
